@@ -1,3 +1,3 @@
-# DSR Automation
+# sitrep-auto
 
-Instructions for deploying with Render.com
+This project automates the generation of daily DSR reports from Google Drive Excel files.
