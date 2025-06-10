@@ -1,5 +1,1 @@
-services:
-  - type: worker
-    name: dsr-auto
-    env: python
-    plan: free
+
