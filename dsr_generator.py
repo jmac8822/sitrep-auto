@@ -6,8 +6,8 @@ from dsr_formatter import generate_dsr_docx
 from email_util import send_email_with_attachment
 
 # === Config ===
-SENDER_EMAIL = 'johnmhughes@gmail.com'  # Replace with your sender email
-SENDER_PASSWORD = 'izcvszicmrqsodfh' # Use Gmail app password (not raw password)
+SENDER_EMAIL = 'johnmhughes@gmail.com'
+SENDER_PASSWORD = 'izcvszicmrqsodfh'
 RECIPIENTS = ['johnmhughes@gmail.com']
 
 def extract_dummy_data_from_excel(excel_path):
@@ -43,25 +43,21 @@ def main():
     ship_name = ship_data['name'].replace(' ', '_')
     today_str = datetime.now().strftime("%Y-%m-%d")
 
-    # Output file
-    output_file = f"downloads/{ship_name}_{today_str}_DSR_Report.docx"
-    temp_output_path = os.path.join('downloads', output_filename)
+    output_filename = f"{ship_name}_{today_str}_DSR_Report.docx"
+    temp_output_path = os.path.join("downloads", output_filename)
 
-    # Generate doc
+    # Generate the DSR doc
     generate_dsr_docx(parsed_data, temp_output_path)
     print(f"✅ DSR generated: {temp_output_path}")
 
-    # 💾 Move to Gen_DSR/<ShipName>/ folder
-    main_dir = "Gen_DSR"
-#    ship_folder = os.path.join(main_dir, ship_name)
+    # Move to Gen_DSR/<ShipName>/
     ship_folder = os.path.join("Gen_DSR", ship_name)
     os.makedirs(ship_folder, exist_ok=True)
-
     final_path = os.path.join(ship_folder, output_filename)
     shutil.move(temp_output_path, final_path)
     print(f"📂 Moved DSR to: {final_path}")
 
-    # 📧 Email it out
+    # Send email
     subject = f"Daily SITREP – {today_str}"
     body = f"Attached is the daily DSR for {ship_data['name']} as of {today_str}."
     print(f"📧 Sending email to {RECIPIENTS}...")
