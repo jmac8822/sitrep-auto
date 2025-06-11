@@ -44,7 +44,7 @@ def main():
     today_str = datetime.now().strftime("%Y-%m-%d")
 
     # Output file
-    output_filename = f"USS_{ship_name}_{today_str}_DSR_Report.docx"
+    output_file = f"downloads/{ship_name}_{today_str}_DSR_Report.docx"
     temp_output_path = os.path.join('downloads', output_filename)
 
     # Generate doc
@@ -53,7 +53,8 @@ def main():
 
     # 💾 Move to Gen_DSR/<ShipName>/ folder
     main_dir = "Gen_DSR"
-    ship_folder = os.path.join(main_dir, ship_name)
+#    ship_folder = os.path.join(main_dir, ship_name)
+    ship_folder = os.path.join("Gen_DSR", ship_name)
     os.makedirs(ship_folder, exist_ok=True)
 
     final_path = os.path.join(ship_folder, output_filename)
