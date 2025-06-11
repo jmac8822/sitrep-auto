@@ -64,14 +64,14 @@ def download_latest_files():
     # Ensure this checks ALL files
     import re
 
-dsr_files = [
-    f for f in all_files
-    if (
-        f['name'].lower().endswith('.xlsx') and
-        re.search(r'\bdsr\b', f['name'].lower()) and
-        re.search(r'\d{4}-\d{2}-\d{2}', f['name'])  # has YYYY-MM-DD
-    )
-]
+    dsr_files = [
+        f for f in all_files
+        if (
+            f['name'].lower().endswith('.xlsx') and
+            re.search(r'\bdsr\b', f['name'].lower()) and
+            re.search(r'\d{4}-\d{2}-\d{2}', f['name'])  # has YYYY-MM-DD
+        )
+    ]
 
     tracker_files = [
         f for f in all_files
@@ -95,6 +95,7 @@ dsr_files = [
 
     return dsr_path, tracker_path
 
+
 def upload_to_drive(service, local_file_path, ship_name):
     # Main shared folder ID
     parent_id = '1GMZQgdsJ3fyhUvAX_mAyRNpuOIou7PGz'
@@ -115,9 +116,20 @@ def upload_to_drive(service, local_file_path, ship_name):
         folder = service.files().create(body=file_metadata, fields='id').execute()
         folder_id = folder['id']
 
-    # Upload the file to that folder
+    # ✅ Upload the file to the ship's subfolder
     from googleapiclient.http import MediaFileUpload
-    file_metadata = {'name': os.path.basename(local_file_path), 'parents': [folder_id]}
-    media = MediaFileUpload(local_file_path, mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-    uploaded = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+    file_metadata = {
+        'name': os.path.basename(local_file_path),
+        'parents': [folder_id]
+    }
+    media = MediaFileUpload(
+        local_file_path,
+        mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    )
+    uploaded = service.files().create(
+        body=file_metadata,
+        media_body=media,
+        fields='id'
+    ).execute()
+
     return uploaded['id']
