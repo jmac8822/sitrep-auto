@@ -61,14 +61,29 @@ def download_latest_files():
     service = create_drive_service()
     all_files = list_all_files(service, MAIN_FOLDER_ID)
 
-    dsr_files = [f for f in all_files if f['name'].lower().endswith('.xlsx') and 'dsr' in f['name'].lower()]
-    tracker_files = [f for f in all_files if 'master itsis installation tracker' in f['name'].lower()]
+    # Ensure this checks ALL files
+    import re
+
+dsr_files = [
+    f for f in all_files
+    if (
+        f['name'].lower().endswith('.xlsx') and
+        re.search(r'\bdsr\b', f['name'].lower()) and
+        re.search(r'\d{4}-\d{2}-\d{2}', f['name'])  # has YYYY-MM-DD
+    )
+]
+
+    tracker_files = [
+        f for f in all_files
+        if 'master itsis installation tracker' in f['name'].lower()
+    ]
 
     if not dsr_files:
         raise Exception("No DSR Excel file found.")
     if not tracker_files:
         raise Exception("No tracker Excel file found.")
 
+    # ✅ Select based on most recent modifiedTime
     latest_dsr = max(dsr_files, key=lambda f: f['modifiedTime'])
     latest_tracker = max(tracker_files, key=lambda f: f['modifiedTime'])
 
@@ -79,6 +94,7 @@ def download_latest_files():
     tracker_path = download_file(service, latest_tracker['id'], latest_tracker['name'])
 
     return dsr_path, tracker_path
+
 def upload_to_drive(service, local_file_path, ship_name):
     # Main shared folder ID
     parent_id = '1GMZQgdsJ3fyhUvAX_mAyRNpuOIou7PGz'
