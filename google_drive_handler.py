@@ -79,3 +79,29 @@ def download_latest_files():
     tracker_path = download_file(service, latest_tracker['id'], latest_tracker['name'])
 
     return dsr_path, tracker_path
+def upload_to_drive(service, local_file_path, ship_name):
+    # Main shared folder ID
+    parent_id = '1GMZQgdsJ3fyhUvAX_mAyRNpuOIou7PGz'
+
+    # Check or create subfolder for the ship
+    query = f"'{parent_id}' in parents and name = '{ship_name}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false"
+    response = service.files().list(q=query, spaces='drive', fields='files(id, name)').execute()
+    items = response.get('files', [])
+
+    if items:
+        folder_id = items[0]['id']
+    else:
+        file_metadata = {
+            'name': ship_name,
+            'mimeType': 'application/vnd.google-apps.folder',
+            'parents': [parent_id]
+        }
+        folder = service.files().create(body=file_metadata, fields='id').execute()
+        folder_id = folder['id']
+
+    # Upload the file to that folder
+    from googleapiclient.http import MediaFileUpload
+    file_metadata = {'name': os.path.basename(local_file_path), 'parents': [folder_id]}
+    media = MediaFileUpload(local_file_path, mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    uploaded = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+    return uploaded['id']
