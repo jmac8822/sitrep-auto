@@ -1,16 +1,17 @@
+import os
+import shutil
+from datetime import datetime
 from google_drive_handler import download_latest_files
 from dsr_formatter import generate_dsr_docx
 from email_util import send_email_with_attachment
-import os
-from datetime import datetime
 
 # === Config ===
 SENDER_EMAIL = 'your_email@gmail.com'  # Replace with your sender email
-SENDER_PASSWORD = 'your_app_password'  # Use Gmail app password (never raw password)
+SENDER_PASSWORD = 'your_app_password'  # Use Gmail app password (not raw password)
 RECIPIENTS = ['johnmhughes@gmail.com']
 
 def extract_dummy_data_from_excel(excel_path):
-    # Replace with actual parsing logic — this is a placeholder structure
+    # Replace this with real Excel parsing logic
     return {
         'ships': [
             {
@@ -36,19 +37,34 @@ def main():
     dsr_path, tracker_path = download_latest_files()
 
     print("📊 Parsing Excel data and formatting DSR...")
-    parsed_data = extract_dummy_data_from_excel(dsr_path)  # Placeholder logic
+    parsed_data = extract_dummy_data_from_excel(dsr_path)  # Placeholder
 
+    ship_data = parsed_data['ships'][0]
+    ship_name = ship_data['name'].replace(' ', '_')
     today_str = datetime.now().strftime("%Y-%m-%d")
-    ship_name = parsed_data['ships'][0]['name'].replace(' ', '_')
-    output_file = f"downloads/USS_{ship_name}_{today_str}_DSR_Report.docx"
 
-    generate_dsr_docx(parsed_data, output_file)
-    print(f"✅ DSR generated: {output_file}")
+    # Output file
+    output_filename = f"USS_{ship_name}_{today_str}_DSR_Report.docx"
+    temp_output_path = os.path.join('downloads', output_filename)
 
+    # Generate doc
+    generate_dsr_docx(parsed_data, temp_output_path)
+    print(f"✅ DSR generated: {temp_output_path}")
+
+    # 💾 Move to Gen_DSR/<ShipName>/ folder
+    main_dir = "Gen_DSR"
+    ship_folder = os.path.join(main_dir, ship_name)
+    os.makedirs(ship_folder, exist_ok=True)
+
+    final_path = os.path.join(ship_folder, output_filename)
+    shutil.move(temp_output_path, final_path)
+    print(f"📂 Moved DSR to: {final_path}")
+
+    # 📧 Email it out
     subject = f"Daily SITREP – {today_str}"
-    body = f"Attached is the daily DSR for {parsed_data['ships'][0]['name']} as of {today_str}."
+    body = f"Attached is the daily DSR for {ship_data['name']} as of {today_str}."
     print(f"📧 Sending email to {RECIPIENTS}...")
-    send_email_with_attachment(subject, body, output_file, RECIPIENTS, SENDER_EMAIL, SENDER_PASSWORD)
+    send_email_with_attachment(subject, body, final_path, RECIPIENTS, SENDER_EMAIL, SENDER_PASSWORD)
 
 if __name__ == '__main__':
     main()
