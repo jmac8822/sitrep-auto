@@ -7,7 +7,7 @@ from email_util import send_email_with_attachment
 
 # === Config ===
 SENDER_EMAIL = 'johnmhughes@gmail.com'
-SENDER_PASSWORD = 'izcvszicmrqsodfh'
+SENDER_PASSWORD = 'bpbyukfcoezsmszx'
 RECIPIENTS = ['johnmhughes@gmail.com']
 
 def extract_dummy_data_from_excel(excel_path):
