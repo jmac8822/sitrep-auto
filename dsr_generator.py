@@ -1,3 +1,38 @@
+import os
+import shutil
+from datetime import datetime
+from google_drive_handler import download_latest_files
+from dsr_formatter import generate_dsr_docx
+from email_util import send_email_with_attachment
+
+# === Config ===
+import os
+SENDER_EMAIL = os.environ.get('EMAIL_USER')
+SENDER_PASSWORD = os.environ.get('EMAIL_PASS')
+RECIPIENTS = [os.environ.get('RECIPIENT_EMAIL')]
+
+def extract_dummy_data_from_excel(excel_path):
+    # Replace this with real Excel parsing logic
+    return {
+        'ships': [
+            {
+                'name': 'USS HOWARD',
+                'region': 'Japan',
+                'percent_t52a': '47%',
+                'work_completed_t52a': [
+                    'Cables Installed:',
+                    '– R-PB111-W44086',
+                    '– R-PB111-W44087 – 50% complete',
+                    '– R-PB111-W44088 – 50% complete'
+                ],
+                'planned_work_t52a': ['Continue cable installation'],
+                'percent_ecs': '2%',
+                'work_completed_ecs': ['No production activity performed'],
+                'next_steps_ecs': ['Awaiting ILS and workbook to initiate check-in']
+            }
+        ]
+    }
+
 def main():
     print("📥 Downloading latest DSR and Tracker files from Google Drive...")
     dsr_path, tracker_path = download_latest_files()
@@ -28,12 +63,12 @@ def main():
     body = f"Attached is the daily DSR for {ship_data['name']} as of {today_str}."
     print(f"📧 Sending email to {RECIPIENTS}...")
     send_email_with_attachment(subject, body, final_path, RECIPIENTS, SENDER_EMAIL, SENDER_PASSWORD)
+from google_drive_handler import create_drive_service, upload_to_drive
 
-    # ✅ Upload to Google Drive
-    from google_drive_handler import create_drive_service, upload_to_drive
-    service = create_drive_service()
-    drive_file_id = upload_to_drive(service, final_path, ship_name)
-    print(f"📤 Uploaded to Google Drive in folder '{ship_name}' (File ID: {drive_file_id})")
+# Upload to Google Drive under Gen_DSR equivalent
+service = create_drive_service()
+drive_file_id = upload_to_drive(service, final_path, ship_name)
+print(f"📤 Uploaded to Google Drive in folder '{ship_name}' (File ID: {drive_file_id})")
 
 if __name__ == '__main__':
     main()
