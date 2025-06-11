@@ -6,9 +6,10 @@ from dsr_formatter import generate_dsr_docx
 from email_util import send_email_with_attachment
 
 # === Config ===
-SENDER_EMAIL = 'johnmhughes@gmail.com'
-SENDER_PASSWORD = 'bpbyukfcoezsmszx'
-RECIPIENTS = ['johnmhughes@gmail.com']
+import os
+SENDER_EMAIL = os.environ.get('EMAIL_USER')
+SENDER_PASSWORD = os.environ.get('EMAIL_PASS')
+RECIPIENTS = [os.environ.get('RECIPIENT_EMAIL')]
 
 def extract_dummy_data_from_excel(excel_path):
     # Replace this with real Excel parsing logic
