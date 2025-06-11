@@ -4,7 +4,7 @@ from googleapiclient.discovery import build
 from google.oauth2 import service_account
 from googleapiclient.http import MediaIoBaseDownload
 
-SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
+SCOPES = ['https://www.googleapis.com/auth/drive']
 SERVICE_ACCOUNT_FILE = 'credentials.json'
 DOWNLOAD_DIR = '/opt/render/project/src/downloads'
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
