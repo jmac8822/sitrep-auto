@@ -6,8 +6,8 @@ from dsr_formatter import generate_dsr_docx
 from email_util import send_email_with_attachment
 
 # === Config ===
-SENDER_EMAIL = 'your_email@gmail.com'  # Replace with your sender email
-SENDER_PASSWORD = 'your_app_password'  # Use Gmail app password (not raw password)
+SENDER_EMAIL = 'johnmhughes@gmail.com'  # Replace with your sender email
+SENDER_PASSWORD = izcv szic mrqs odfh # Use Gmail app password (not raw password)
 RECIPIENTS = ['johnmhughes@gmail.com']
 
 def extract_dummy_data_from_excel(excel_path):
